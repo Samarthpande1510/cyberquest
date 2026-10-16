@@ -14,6 +14,8 @@ namespace CyberQuest.UI
         public const string ResourcePath = "CyberQuestUiTheme";
 
         public TMP_FontAsset font;
+        [Tooltip("URP shader-graph SDF material. The legacy TMP shaders draw text with the wrong eye in single-pass stereo.")]
+        public Material fontMaterial;
         public Material unlit;
         public PokeButton3D button;
         public Texture2D qrCode;
@@ -22,6 +24,12 @@ namespace CyberQuest.UI
         public AudioClip okay;
         public AudioClip bad;
         public AudioClip notify;
+        public AudioClip beep;
+        public AudioClip thud;
+        public AudioClip doorBuzzer;
+        public AudioClip deskRing;
+        public AudioClip phoneBuzz;
+        public AudioClip unlock;
 
         // Palette (sRGB). Light-on-dark panels read best in a headset.
         public static readonly Color PanelColor = new Color(0.06f, 0.09f, 0.15f);
@@ -35,6 +43,18 @@ namespace CyberQuest.UI
         public static readonly Color Green = new Color(0.09f, 0.55f, 0.27f);
         public static readonly Color Purple = new Color(0.43f, 0.16f, 0.85f);
         public static readonly Color Teal = new Color(0.05f, 0.50f, 0.55f);
+        public static readonly Color Slate = new Color(0.2f, 0.26f, 0.36f);
+
+        /// <summary>Plays a theme clip as a one-shot at a world position (no-op if the clip is missing).</summary>
+        public static void Play(System.Func<UiTheme, AudioClip> pick, Vector3 position, float volume = 0.8f)
+        {
+            var theme = Instance;
+            var clip = theme != null ? pick(theme) : null;
+            if (clip != null)
+            {
+                AudioSource.PlayClipAtPoint(clip, position, volume);
+            }
+        }
 
         private static UiTheme _instance;
 

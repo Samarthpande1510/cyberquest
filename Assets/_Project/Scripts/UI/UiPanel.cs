@@ -39,11 +39,17 @@ namespace CyberQuest.UI
             ContentTop = contentTop;
         }
 
-        public static UiPanel Create(Transform parent, string name, Vector2 size, string title, Color accent)
+        /// <param name="viewDistance">Expected reading distance in metres (used by the automated legibility check).</param>
+        /// <param name="scale">Uniform scale applied to the whole panel (phone UI is authored large and scaled down).</param>
+        public static UiPanel Create(Transform parent, string name, Vector2 size, string title, Color accent,
+            float viewDistance = 1f, float scale = 1f)
         {
             var root = new GameObject(name);
             root.transform.SetParent(parent, false);
-            root.AddComponent<UiPanelBounds>().size = size;
+            root.transform.localScale = Vector3.one * scale;
+            var bounds = root.AddComponent<UiPanelBounds>();
+            bounds.size = size;
+            bounds.viewDistance = viewDistance;
 
             bool hasHeader = !string.IsNullOrEmpty(title);
             var panel = new UiPanel(root, size, size.y / 2f - (hasHeader ? HeaderHeight : 0f) - Pad);
@@ -78,6 +84,10 @@ namespace CyberQuest.UI
             if (theme != null && theme.font != null)
             {
                 tmp.font = theme.font;
+                if (theme.fontMaterial != null)
+                {
+                    tmp.fontSharedMaterial = theme.fontMaterial;
+                }
             }
             tmp.rectTransform.sizeDelta = area.size;
             tmp.textWrappingMode = TextWrappingModes.Normal;
@@ -140,15 +150,31 @@ namespace CyberQuest.UI
 
         public Renderer Quad(string name, Vector2 center, Vector2 size, Color color, float z)
         {
-            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            quad.name = name;
-            Object.Destroy(quad.GetComponent<Collider>());
+            // Mesh-only quad: a primitive's MeshCollider would sit under grabbable rigidbodies (the phone).
+            var quad = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer));
+            quad.GetComponent<MeshFilter>().sharedMesh = QuadMesh;
             quad.transform.SetParent(Root.transform, false);
             quad.transform.localPosition = new Vector3(center.x, center.y, z);
             quad.transform.localScale = new Vector3(size.x, size.y, 1f);
             var r = quad.GetComponent<Renderer>();
             SetColor(r, color);
             return r;
+        }
+
+        private static Mesh _quadMesh;
+
+        private static Mesh QuadMesh
+        {
+            get
+            {
+                if (_quadMesh == null)
+                {
+                    var tmp = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                    _quadMesh = tmp.GetComponent<MeshFilter>().sharedMesh;
+                    Object.DestroyImmediate(tmp);
+                }
+                return _quadMesh;
+            }
         }
 
         public static void SetColor(Renderer r, Color color)
@@ -181,5 +207,6 @@ namespace CyberQuest.UI
     public class UiPanelBounds : MonoBehaviour
     {
         public Vector2 size;
+        public float viewDistance = 1f;
     }
 }
