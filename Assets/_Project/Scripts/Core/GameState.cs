@@ -1,58 +1,70 @@
+using System.Collections.Generic;
+
 namespace CyberQuest.Core
 {
     /// <summary>
-    /// Single source of truth for player choices across all events. A plain C#
-    /// class (not a MonoBehaviour) per CLAUDE.md 2.1 — event scripts read/write
-    /// this directly instead of tracking their own parallel state.
+    /// Single source of truth for every player choice (CLAUDE.md 4.1). Plain C#;
+    /// situations write here directly and nothing else tracks "what step are we on".
     /// </summary>
+    [System.Serializable]
     public class GameState
     {
         public static GameState Current { get; private set; } = new GameState();
 
-        /// <summary>Resets to a fresh session. Used by Play Again, the debug menu (Stage 10) and tests.</summary>
+        /// <summary>Fresh session (Play Again, tests, debug window).</summary>
         [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void ResetForNewSession()
         {
             Current = new GameState();
         }
 
-        // Event 1-2: Email / QR / Fake login
-        public bool emailOpened;
-        public bool qrScanned;
-        public string emailAction = "not-reached"; // "ignored" | "forwarded" | "scanned" | "not-reached"
-        public bool loginEventTriggered;
-        public string loginResult = "not-reached"; // "reported" | "closed" | "entered" | "not-reached"
+        // Situation 1-2: email, QR, fake login
+        public bool emailOpened, emailForwardedToSecurity, emailIgnored, qrScanned;
+        public LoginResult login;
 
-        // Event 3: USB
-        public bool usbFound;
-        public string usbAction = "not-reached"; // "reported" | "plugged" | "ignored" | "not-reached"
+        // Situation 3: USB
+        public UsbAction usb;
 
-        // Event 4: False positive (Priya)
-        public bool priyaEventTriggered;
-        public string priyaResponse = "not-reached"; // "helped-properly" | "refused" | "let-in-unverified" | "not-reached"
+        // Situation 4: colleague (false positive)
+        public ColleagueResponse colleague;
+        public bool colleagueDirectoryChecked;
 
-        // Event 5: Imposter
-        public bool imposterEventTriggered;
-        public string imposterResponse = "not-reached"; // "verified" | "complied" | "delayed-then-verified" | "asked-own-login" | "not-reached"
+        // Situation 5: intercom impersonator
+        public IntercomResponse intercom;
+        public bool intercomBadgeInspected, intercomManagerEmailChecked, maintenanceNoticeRead;
 
-        // Event 6: MFA attack
-        public bool mfaEventTriggered;
-        public string mfaResponse = "not-reached"; // "denied" | "approved" | "not-reached"
+        // Situation 6: MFA push
+        public MfaResponse mfa;
 
-        // Derived / meta
-        public bool credentialsCompromised;
-        public float sessionTimeElapsed;
-        public int score;
+        // Situation 7: unlocked workstation (optional)
+        public WorkstationResult workstation;
 
-        /// <summary>Centralized compromise rule per CLAUDE.md 2.3 — call after any field
-        /// that feeds it changes. Events not yet implemented stay at "not-reached" and
-        /// simply don't contribute.</summary>
-        public void EvaluateCompromise()
+        // Ending flow
+        public bool deductionCorrect, reportFiled;
+        public float gameMinutesAtEnd;
+
+        /// <summary>Actual completion order, for research data.</summary>
+        public List<SituationId> completionOrder = new List<SituationId>();
+
+        /// <summary>login==Entered, usb==Plugged, intercom==BuzzedIn, mfa==Approved.</summary>
+        public int CompromiseSources =>
+            (login == LoginResult.Entered ? 1 : 0) +
+            (usb == UsbAction.Plugged ? 1 : 0) +
+            (intercom == IntercomResponse.BuzzedIn ? 1 : 0) +
+            (mfa == MfaResponse.Approved ? 1 : 0);
+
+        public bool CredentialsCompromised => CompromiseSources > 0;
+
+        public int CompletedCount => completionOrder.Count;
+
+        public void MarkCompleted(SituationId id)
         {
-            credentialsCompromised =
-                loginResult == "entered" ||
-                usbAction == "plugged" ||
-                imposterResponse == "complied";
+            if (!completionOrder.Contains(id))
+            {
+                completionOrder.Add(id);
+            }
         }
+
+        public bool IsCompleted(SituationId id) => completionOrder.Contains(id);
     }
 }

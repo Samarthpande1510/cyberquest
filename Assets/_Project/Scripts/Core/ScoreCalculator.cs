@@ -1,83 +1,88 @@
 namespace CyberQuest.Core
 {
     /// <summary>
-    /// Computes the weighted 0-100 score per CLAUDE.md section 4. Each of the
-    /// five categories scores 0 / 0.5 / 1 based on response quality; an event
-    /// the player never reached scores 0.5 (neutral - neither punished nor
-    /// rewarded for running out of time).
+    /// Five categories at 20% each (CLAUDE.md 7). Unreached categories are
+    /// excluded and the remaining weights renormalised. Computed once at the end.
     /// </summary>
     public static class ScoreCalculator
     {
-        public static int Compute(GameState state)
+        public static ScoreBreakdown Compute(GameState s)
         {
-            float phishing = ScorePhishing(state);
-            float physical = ScoreUsb(state);
-            float social = ScorePriya(state);
-            float impersonation = ScoreImposter(state);
-            float mfa = ScoreMfa(state);
+            var b = new ScoreBreakdown
+            {
+                Phishing = Phishing(s),
+                Physical = Physical(s),
+                Social = Social(s),
+                Impersonation = Impersonation(s),
+                Mfa = Mfa(s),
+            };
 
-            float weighted = (phishing + physical + social + impersonation + mfa) / 5f;
-            return UnityEngine.Mathf.RoundToInt(weighted * 100f);
+            float sum = (b.Phishing ?? 0f) + (b.Physical ?? 0f) + (b.Social ?? 0f) + (b.Impersonation ?? 0f) + (b.Mfa ?? 0f);
+            int reached = b.ReachedCount;
+            b.Total = reached == 0 ? 0 : (int)System.Math.Round(sum / reached * 100f, System.MidpointRounding.AwayFromZero);
+            return b;
         }
 
-        private static float ScorePhishing(GameState state)
+        public static float? Phishing(GameState s)
         {
-            if (state.loginResult == "entered")
-            {
-                return 0f;
-            }
-            if (state.emailAction == "forwarded" || state.loginResult == "reported")
-            {
-                return 1f;
-            }
-            if (state.emailAction == "ignored" || state.loginResult == "closed")
-            {
-                return 0.5f;
-            }
-            return 0.5f; // not-reached
+            if (s.login == LoginResult.Entered) return 0f;
+            if (s.emailForwardedToSecurity || s.login == LoginResult.Reported) return 1f;
+            if (s.login == LoginResult.Closed || s.qrScanned) return 0.5f;
+            if (s.emailIgnored || s.emailOpened) return 0.75f;
+            return null;
         }
 
-        private static float ScoreUsb(GameState state)
+        public static float? Physical(GameState s)
         {
-            return state.usbAction switch
+            float? usb = s.usb switch
             {
-                "reported" => 1f,
-                "ignored" => 0.5f,
-                "plugged" => 0f,
-                _ => 0.5f, // not-reached
+                UsbAction.Reported => 1f,
+                UsbAction.Ignored => 0.5f,
+                UsbAction.Plugged => 0f,
+                _ => (float?)null,
+            };
+            float? ws = s.workstation switch
+            {
+                WorkstationResult.Reported => 1f,
+                WorkstationResult.Locked => 0.75f,
+                WorkstationResult.Ignored => 0f,
+                _ => (float?)null,
+            };
+            if (usb.HasValue && ws.HasValue) return (usb.Value + ws.Value) / 2f;
+            return usb ?? ws;
+        }
+
+        public static float? Social(GameState s)
+        {
+            return s.colleague switch
+            {
+                ColleagueResponse.VerifiedThenHelped => 1f,
+                ColleagueResponse.UnlockedBlindly => 0.5f,
+                ColleagueResponse.RefusedOutright => 0.5f,
+                _ => (float?)null,
             };
         }
 
-        private static float ScorePriya(GameState state)
+        public static float? Impersonation(GameState s)
         {
-            return state.priyaResponse switch
+            return s.intercom switch
             {
-                "helped-properly" => 1f,
-                "refused" => 0.5f,
-                "let-in-unverified" => 0f,
-                _ => 0.5f, // not-reached
+                IntercomResponse.VerifiedExternally => 1f,
+                IntercomResponse.RefusedWithoutVerifying => 0.75f,
+                IntercomResponse.BuzzedIn => 0f,
+                _ => (float?)null,
             };
         }
 
-        private static float ScoreImposter(GameState state)
+        public static float? Mfa(GameState s)
         {
-            return state.imposterResponse switch
+            return s.mfa switch
             {
-                "verified" => 1f,
-                "delayed-then-verified" => 1f,
-                "asked-own-login" => 0.5f,
-                "complied" => 0f,
-                _ => 0.5f, // not-reached
-            };
-        }
-
-        private static float ScoreMfa(GameState state)
-        {
-            return state.mfaResponse switch
-            {
-                "denied" => 1f,
-                "approved" => 0f,
-                _ => 0.5f, // not-reached
+                MfaResponse.DeniedAndReported => 1f,
+                MfaResponse.Denied => 0.75f,
+                MfaResponse.Ignored => 0.25f,
+                MfaResponse.Approved => 0f,
+                _ => (float?)null,
             };
         }
     }
