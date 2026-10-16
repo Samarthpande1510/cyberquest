@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_Project/Scenes/CyberQuest.unity
-    guid: 4ec94cb8bc55cdb4f844baa8a6ccb51d
+    path: Assets/_Project/Scenes/Office_Main.unity
+    guid: b3e29f281abfea644809e2888371a8a3
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

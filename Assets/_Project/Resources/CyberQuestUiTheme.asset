@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cf4e0e9fdc6de54eafff49313a0dc5e, type: 3}
+  m_Name: CyberQuestUiTheme
+  m_EditorClassIdentifier: Assembly-CSharp::CyberQuest.UI.UiTheme
+  font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  fontMaterial: {fileID: 2100000, guid: 7cc27ea4b5cad2f469a3f4d70ecb0359, type: 2}
+  unlit: {fileID: 2100000, guid: 9e2cf019d75298b43a8d879d91d88575, type: 2}
+  button: {fileID: 8368725136928262375, guid: 64c327d15606fa447ab24f1e9b729ea5, type: 3}
+  qrCode: {fileID: 2800000, guid: 6362fc68b6ddf6f4aa1c0802190be44a, type: 3}
+  click: {fileID: 8300000, guid: cbca8582ee550c3489dac14efec88818, type: 3}
+  good: {fileID: 8300000, guid: 27e7a6194315be849b3d46b85e311f53, type: 3}
+  okay: {fileID: 8300000, guid: df636266148d68745b54148eab20e466, type: 3}
+  bad: {fileID: 8300000, guid: 5676c4b7f7ebc0f4bb1620c9931811a3, type: 3}
+  notify: {fileID: 8300000, guid: a8c59a4e0dfc31049affdf29f1684ec7, type: 3}
+  beep: {fileID: 8300000, guid: 6247023acca0b31479188ac8cae235a1, type: 3}
+  thud: {fileID: 8300000, guid: 021a8f879cea69c4ca97075c40a0c1c2, type: 3}
+  doorBuzzer: {fileID: 8300000, guid: c755277bba23a6946b707f3067e29d61, type: 3}
+  deskRing: {fileID: 8300000, guid: 65be9096b15102044bd811dcd2f08521, type: 3}
+  phoneBuzz: {fileID: 8300000, guid: 59515787afa1cf34684cfc44a72d4f33, type: 3}
+  unlock: {fileID: 8300000, guid: 409a4966399e59a44b7a752717e38165, type: 3}
