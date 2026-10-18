@@ -39,6 +39,9 @@ namespace CyberQuest.Core
         // Situation 7: unlocked workstation (optional)
         public WorkstationResult workstation;
 
+        // Start-of-shift orientation: the company policies board in the open plan (research data only)
+        public bool policyBoardRead;
+
         // Ending flow
         public bool deductionCorrect, reportFiled;
         public float gameMinutesAtEnd;

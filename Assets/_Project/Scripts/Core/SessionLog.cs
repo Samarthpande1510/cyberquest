@@ -48,10 +48,15 @@ namespace CyberQuest.Core
 
         public static IReadOnlyList<Entry> Entries => _doc.entries;
 
+        public static string SessionId => _doc.sessionId;
+
+        public static string StartedUtc => _doc.startedUtc;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void Reset()
         {
             _doc = NewDoc();
+            PhysicalSecurityTelemetryLogger.ResetSession();
         }
 
         private static Document NewDoc() => new Document

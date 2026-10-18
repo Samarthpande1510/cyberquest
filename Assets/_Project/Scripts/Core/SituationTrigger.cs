@@ -37,6 +37,9 @@ namespace CyberQuest.Core
 
         /// <summary>Situation-specific primary condition (e.g. "QR was scanned").</summary>
         protected virtual bool HasCustomCondition => false;
+
+        /// <summary>When the request was put to the player (challenge latency starts here).</summary>
+        protected virtual float RequestShownAt => TriggeredAt;
         protected virtual bool CustomCondition() => true;
 
         protected abstract void OnTriggered();
@@ -150,6 +153,7 @@ namespace CyberQuest.Core
             Resolved = true;
             State.MarkCompleted(id);
             SessionLog.Decision($"{id}: {decision}");
+            PhysicalSecurityTelemetryLogger.RecordDecision(id, decision, RequestShownAt, Director != null ? Director.Elapsed : TriggeredAt);
             Director?.Release(this);
         }
 
