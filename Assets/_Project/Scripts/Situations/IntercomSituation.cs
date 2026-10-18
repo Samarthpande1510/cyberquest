@@ -46,6 +46,8 @@ namespace CyberQuest.Situations
         public CallerSubtitle Subtitle => _subtitle;
         public bool BadgeVisible => _badge != null && _badge.Root.activeSelf;
 
+        protected override float RequestShownAt => _answered ? _answeredAt : TriggeredAt;
+
         private void Awake()
         {
             var screen = screenAnchor != null ? screenAnchor : transform;
@@ -208,6 +210,35 @@ namespace CyberQuest.Situations
             {
                 _noticeOffered = true;
                 RefreshOptions();
+            }
+            if (_answered && !Resolved)
+            {
+                SampleTelemetry();
+            }
+        }
+
+        /// <summary>Research telemetry: time spent looking at the badge image, closest approach to the intercom.</summary>
+        private void SampleTelemetry()
+        {
+            var cam = Camera.main;
+            if (cam == null)
+            {
+                return;
+            }
+            var eye = cam.transform;
+            if (intercomAnchor != null)
+            {
+                Vector3 d = eye.position - intercomAnchor.position;
+                d.y = 0f;
+                PhysicalSecurityTelemetryLogger.ObserveDistance(id, d.magnitude);
+            }
+            if (BadgeVisible)
+            {
+                Vector3 to = _badge.Root.transform.position - eye.position;
+                if (to.magnitude < 3f && Vector3.Angle(eye.forward, to) < 15f)
+                {
+                    PhysicalSecurityTelemetryLogger.AddBadgeGaze(Time.deltaTime);
+                }
             }
         }
 

@@ -1225,6 +1225,17 @@ namespace CyberQuest.EditorTools
                 "Fire drill\nfirst Monday\nof the month", 0.11f, new Vector2(0.4f, 0.26f), new Color(0.1f, 0.1f, 0.12f), m.Paper, local: true);
             Clue(board, "Clue_MaintenanceNotice", new Vector3(17.9f, 1.57f, 4.82f), ClueReadable.Clue.MaintenanceNotice, 0.3f, 2.5f);
 
+            // Company policies board: open-plan north wall, right of the corridor doorway. Says where
+            // the staff directory and the found-devices box are; never refers to tonight's situations.
+            Sign(clues, "PolicyBoard", new Vector3(7.4f, 1.6f, 7.93f), Quaternion.identity,
+                "<b>NEXORA  -  COMPANY POLICIES</b>\n\n" +
+                "<b>Staff directory</b>\nNames, departments and phone extensions are on the directory board " +
+                "in the Lobby, beside the main door.\n\n" +
+                "<b>Lost & found</b>\nFound devices go in the FOUND DEVICES box in the corridor, outside the IT room.\n\n" +
+                "<b>Building hours</b>\nThe floor locks at 6:30 PM for maintenance.",
+                0.12f, new Vector2(1.0f, 0.8f), new Color(0.1f, 0.1f, 0.12f), m.Paper).alignment = TextAlignmentOptions.TopLeft;
+            Clue(clues, "Clue_PolicyBoard", new Vector3(7.4f, 1.6f, 7.9f), ClueReadable.Clue.PolicyBoard, 0.4f, 3f);
+
             // --- Situation 5: intercom (lobby, beside the main door)
             var sitIntercom = Situation(game, "Situation_Intercom");
             var mainDoorGo = MarkWall(Box("MainDoor", sitIntercom.transform, new Vector3(24f, 1.2f, 5f), new Vector3(0.05f, 2.4f, 1.7f), m.DoorGlass));
@@ -1479,7 +1490,7 @@ x = east, z = north, metres. Ceilings 3 m. About 26 m x 16 m.
 
 | Space | Bounds (x, z) | Contents |
 |---|---|---|
-| Open plan (spawn) | 0-10, 0-8 | Player desk (monitor, desk phone, work phone, USB dock, sticky note), empty desk (USB drop), wall clock |
+| Open plan (spawn) | 0-10, 0-8 | Player desk (monitor, desk phone, work phone, USB dock, sticky note), empty desk (USB drop), wall clock, company policies board (north wall) |
 | Corridor | 0-18, 8-10 and 10-12, 2-8 | Meeting Room 3 door panel, Found devices drop box, IT room door + sign |
 | Break room | 12-18, 0-8 | Bulletin board with the maintenance notice, vending machine, ambient hum/radio |
 | Lobby | 18-24, 0-10 | Main door (exit), intercom, security terminal, directory board |

@@ -15,6 +15,7 @@ namespace CyberQuest.Props
             MaintenanceNotice,
             PriyaDirectoryEntry,
             ItDirectoryEntry,
+            PolicyBoard,
         }
 
         public const float GazeSeconds = 1.5f;
@@ -89,6 +90,9 @@ namespace CyberQuest.Props
                     break;
                 case Clue.PriyaDirectoryEntry:
                     s.colleagueDirectoryChecked = true;
+                    break;
+                case Clue.PolicyBoard:
+                    s.policyBoardRead = true;
                     break;
             }
             SessionLog.Event("Clue read: " + clue);

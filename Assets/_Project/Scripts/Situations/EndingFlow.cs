@@ -40,6 +40,7 @@ namespace CyberQuest.Situations
         public EndingResult Result { get; private set; }
         public ScoreBreakdown Score { get; private set; }
         public string SessionLogPath { get; private set; }
+        public string TelemetryPath { get; private set; }
         public int ResolveCount { get; private set; }
 
         private void Awake()
@@ -226,7 +227,8 @@ namespace CyberQuest.Situations
             Result = EndingResolver.Resolve(state);
             Score = ScoreCalculator.Compute(state);
             SessionLogPath = SessionLog.Write(state, Result.Ending, Score.Total);
-            Debug.Log($"[CyberQuest] Ending {Result.Ending}, score {Score.Total}. Session log: {SessionLogPath}");
+            TelemetryPath = PhysicalSecurityTelemetryLogger.Write(state, Result.Ending, Score.Total);
+            Debug.Log($"[CyberQuest] Ending {Result.Ending}, score {Score.Total}. Session log: {SessionLogPath}. Telemetry: {TelemetryPath}");
 
             _terminal.SetOptions();
             _terminal.Hide();
