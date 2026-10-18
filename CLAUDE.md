@@ -70,6 +70,7 @@ public class GameState
     public bool intercomBadgeInspected, intercomManagerEmailChecked, maintenanceNoticeRead;
     public MfaResponse mfa;
     public WorkstationResult workstation;
+    public bool policyBoardRead;   // start-of-shift orientation, research data only
     public bool deductionCorrect, reportFiled;
     public float gameMinutesAtEnd;
     public List<SituationId> completionOrder = new();   // actual order, for research data
@@ -99,7 +100,8 @@ and the unlocked workstation are physical objects and never block the director.
 ### 5.0 Floor plan (one Unity scene, about 24 m x 16 m, 3 m ceilings, six spaces off a corridor)
 
 - **Open-plan office** (south-west, spawn): player desk with monitor, desk phone, phone
-  cradle, sticky note, wall clock; an empty desk 3 m east (USB event).
+  cradle, sticky note, wall clock; an empty desk 3 m east (USB event); the company policies
+  board on the north wall beside the corridor doorway.
 - **Corridor**: 2 m wide L-shaped spine linking every space. Holds the Meeting Room 3 door
   panel and the "Found devices" drop box.
 - **Lobby** (east): main door (the exit), intercom panel, security terminal, and the wall
@@ -221,6 +223,15 @@ and the unlocked workstation are physical objects and never block the director.
 - `RoomTracker` uses trigger volumes for OpenPlan, Corridor, Lobby, BreakRoom, FinancePod,
   MeetingRoom3 and ItRoomDoor, and logs entry, exit and dwell time per room to SessionLog.
   This is research data only and is never scored.
+- **Company policies (orientation).** The welcome screen and a policies board in the open plan
+  tell the player where the staff directory (lobby board) and the FOUND DEVICES box (corridor,
+  outside the IT room) are, and when the floor locks. They state where resources are, never
+  anything about tonight's situations. Reading the board (1.5 s gaze) sets `policyBoardRead`.
+- **Research telemetry.** `PhysicalSecurityTelemetryLogger` (Core) writes, per session:
+  `session_summary.csv`, `security_audit_real_trials.csv` (course scaffold column names) and an
+  `audit_<participant>_<session>.csv` event trail to `persistentDataPath/telemetry`. Challenge
+  latency = t_decision - t_request; breach rate = CompromiseSources / attack situations reached.
+  Participant IDs are anonymised (P01...). Editor sessions are tagged and excluded from analysis.
 
 ## 6. Endings and resolver
 

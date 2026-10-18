@@ -26,3 +26,11 @@ than 0.75 degrees at the panel's intended reading distance (the phone's address 
 ## Session logs
 Each finished session writes `sessions/session_<timestamp>.json` under `Application.persistentDataPath`
 (decisions with game time, room entries and dwell times, completion order, final state, ending, score).
+
+## Research telemetry and audit trail
+Each finished session also writes CSVs to `telemetry/` under `Application.persistentDataPath`:
+`session_summary.csv` (one row per session), `security_audit_real_trials.csv` (one row per situation reached,
+using the course scaffold's column names) and `audit_<participant>_<session>.csv` (every event and decision).
+Participant IDs (P01, P02...) are assigned once per app launch, so restart the app for each new participant.
+Sessions run in the Editor are tagged `data_source=Editor` and are excluded from analysis by default.
+See `telemetry/README.md` and run `python telemetry/analyse_cyberquest.py telemetry`.

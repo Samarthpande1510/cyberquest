@@ -23,7 +23,7 @@ x = east, z = north, metres. Ceilings 3 m. About 26 m x 16 m.
 
 | Space | Bounds (x, z) | Contents |
 |---|---|---|
-| Open plan (spawn) | 0-10, 0-8 | Player desk (monitor, desk phone, work phone, USB dock, sticky note), empty desk (USB drop), wall clock |
+| Open plan (spawn) | 0-10, 0-8 | Player desk (monitor, desk phone, work phone, USB dock, sticky note), empty desk (USB drop), wall clock, company policies board (north wall) |
 | Corridor | 0-18, 8-10 and 10-12, 2-8 | Meeting Room 3 door panel, Found devices drop box, IT room door + sign |
 | Break room | 12-18, 0-8 | Bulletin board with the maintenance notice, vending machine, ambient hum/radio |
 | Lobby | 18-24, 0-10 | Main door (exit), intercom, security terminal, directory board |
